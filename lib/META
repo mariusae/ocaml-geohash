@@ -1,0 +1,5 @@
+name = "geohash"
+version = "1.0"
+description = "OCaml geohash implementation" 
+archive(byte) = "geohash.cma"
+archive(native) = "geohash.cmxa"

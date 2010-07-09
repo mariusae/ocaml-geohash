@@ -1,0 +1,10 @@
+OCAMLMAKEFILE=OCamlMakefile
+
+SOURCES = gh.ml
+RESULT = gh
+PACKS = geohash
+
+# INCDIRS=lib
+# LIBS=geohash
+
+include $(OCAMLMAKEFILE)
