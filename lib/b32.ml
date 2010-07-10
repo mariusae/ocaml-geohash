@@ -1,15 +1,22 @@
 open Geohash_ext
 
 let alphabet = "0123456789bcdefghjkmnpqrstuvwxyz"
+let alphabet'_max = int_of_char 'z'
 let alphabet' =
-  let max = int_of_char 'z' in
-  let a = Array.create (max + 1) (-1) in
-  for i = 0 to max do
+  let a = Array.create (alphabet'_max + 1) (-1) in
+  for i = 0 to alphabet'_max do
     let char = char_of_int i in
     if String.contains alphabet char
     then a.(i) <- String.index alphabet char
   done;
   a
+
+let validate s =
+  let validate_char chr =
+    let ord = int_of_char chr in
+    if ord > alphabet'_max || alphabet'.(ord) == (-1)
+    then invalid_arg "invalid base32 string" in
+  String.iter validate_char s
 
 let bits_of_ord i =
   [ i land 16 == 16;
@@ -34,6 +41,7 @@ let of_bitstring bitstring =
   end
 
 let decode_to_bitstring b32 =
+  validate b32;
   let l = String.to_list b32 in
   let vals = List.map (fun c -> alphabet'.(int_of_char c)) l in
   let bitss = List.map bits_of_ord vals in

@@ -26,8 +26,8 @@ let deinterleave xs =
   let rec go xs ys zs =
     match xs with
         y :: z :: xs -> go xs (y :: ys) (z :: zs)
-      | [] -> (List.rev ys, List.rev zs) 
-      | _ -> invalid_arg "list not of even length!" in
+      | y :: xs -> go xs (y :: ys) zs
+      | [] -> (List.rev ys, List.rev zs) in
   go xs [] []
 
 let of_lat_lon ?(prec = 10) (lat, lon) =
@@ -42,3 +42,9 @@ let decode gh =
   let (lon_bits, lat_bits) = deinterleave bitstring in
   (range_of_bitstring (-90., 90.) lat_bits,
    range_of_bitstring (-180., 180.) lon_bits)
+
+let decode_ gh =
+  let mid (min, max) = min +. (max -. min) /. 2. in
+  let (lon_range, lat_range) = decode gh in
+  (mid lon_range, mid lat_range)
+  

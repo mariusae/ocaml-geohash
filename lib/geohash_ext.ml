@@ -43,3 +43,11 @@ module String = struct
     let l = Enum.fold (fun elem acc -> elem :: acc) [] e in
     of_list (List.rev l)
 end
+
+module List = struct
+  include List
+
+  let rec any f = function
+    | x :: xs -> f x || any f xs
+    | [] -> false
+end
