@@ -1,14 +1,17 @@
-all:
+makelib:
 	$(MAKE) -C lib/
 
-install: all
+all: reinstall
+	$(MAKE) -f Makefile.gh
+
+install: makelib
 	$(MAKE) -C lib/ libinstall
 
 clean:
 	$(MAKE) -C lib clean
 	$(MAKE) -f Makefile.gh clean
 
-uninstall: all
+uninstall: makelib
 	ocamlfind remove geohash
 
 reinstall:

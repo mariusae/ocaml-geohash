@@ -37,7 +37,7 @@ let of_lat_lon ?(prec = 10) (lat, lon) =
   let b32s = B32.of_bitstring bits in
   String.of_enum (Enum.take prec b32s)
 
-let parse gh =
+let decode gh =
   let bitstring = B32.decode_to_bitstring gh in
   let (lon_bits, lat_bits) = deinterleave bitstring in
   (range_of_bitstring (-90., 90.) lat_bits,
