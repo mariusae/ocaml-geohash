@@ -1,14 +1,12 @@
-OCAMLMAKEFILE=../OCamlMakefile
-
 ANNOTATE = yes
-SOURCES = geohash.ml
+SOURCES = geohash_ext.ml b32.ml geohash.mli geohash.ml 
 RESULT = geohash
 LIBINSTALL_FILES = META geohash.cma geohash.cmxa geohash.a geohash.cmi
 PACKS = extlib
-#FLAGS = -thread
 
 .PHONY: all
 all: ncl dcl
 	@ :
 
+OCAMLMAKEFILE=../OCamlMakefile
 include $(OCAMLMAKEFILE)
