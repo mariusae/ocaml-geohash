@@ -1,4 +1,48 @@
-open Batteries
+module Enum = struct
+  include Enum
+
+  let from_ init f =
+    let state = ref init in
+    let iter () =
+      let (state', res) = f !state in
+      state := state';
+      res in
+    from iter    
+
+  let take n e =
+    let rec collect i =
+      if i == n then []
+      else begin
+        match get e with
+          | None -> []
+          | Some x -> x :: collect (i + 1)
+      end in
+    let xs = collect 0 in
+    from_ xs begin function
+      | [] -> raise No_more_elements
+      | x :: xs' -> (xs', x)
+    end
+end
+
+module String = struct
+  include String
+
+  let to_list s =
+    let rec go i l = if i == 0 then l else go (i - 1) (s.[i - 1] :: l) in
+    go (length s) []
+
+  let of_list l =
+    let len = List.length l in
+    let s = make len ' ' in
+    let rec go i = function
+      | [] -> s
+      | c :: cs -> s.[i] <- c; go (i + 1) cs in
+    go 0 l
+
+  let of_enum e =
+    let l = Enum.fold (fun elem acc -> elem :: acc) [] e in
+    of_list (List.rev l)
+end
 
 (* base32 alphabet *)
 let charset = "0123456789bcdefghjkmnpqrstuvwxyz"
@@ -21,15 +65,15 @@ let bits_of_b32 i =
     i land  1 ==  1 ]
 
 let bitstring_of_float (a, b) value =
-  Enum.from_loop (a, b) begin fun (a, b) ->
+  Enum.from_ (a, b) begin fun (a, b) ->
     let mid = a +. ((b -. a) /. 2.) in
     if value > mid
-    then (true, (mid, b))
-    else (false, (a, mid))
+    then ((mid, b), true)
+    else ((a, mid), false)
   end
 
 let b32string_of_bitstring bitstring =
-  Enum.from_while begin fun () ->
+  Enum.from begin fun () ->
     let get () = match Enum.get bitstring with
         Some true -> 1
       | Some false -> 0
@@ -40,13 +84,13 @@ let b32string_of_bitstring bitstring =
     let b3 = get () lsl 1 in
     let b4 = get () in
     let i32 = b0 lor b1 lor b2 lor b3 lor b4 in
-    Some charset.[i32]
+    charset.[i32]
   end
 
 let interleave x y =
-  Enum.from_loop (x, y) begin fun (x, y) ->
+  Enum.from_ (x, y) begin fun (x, y) ->
     match Enum.get x with
-        Some(x') -> (x', (y, x))
+        Some(x') -> ((y, x), x')
       | None -> raise Enum.No_more_elements
   end
 
